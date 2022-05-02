@@ -15,7 +15,7 @@ exports.insertOne = async(req,res,next) =>{
         res.status(200).json(performance);
     }
     catch(e){
-        res.status(500).json(e);
+        res.status(500).json("Data not enetered correctly. PLease check formatting.");
     }
 };
 
@@ -27,7 +27,7 @@ exports.getAll = async(req,res,next) =>{
             res.status(200).json(performance_all);
           } else {
             console.log("No Authorization");
-            res.status(200).json(error);
+            res.status(401).json(error);
           }
     } catch (error) {
         console.log('An error occured');

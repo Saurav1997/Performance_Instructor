@@ -1,45 +1,44 @@
 const User = require('../models/user');
-
-exports.createOne = async(req,res,next) =>{
-    console.log('Inside Controller');
-    const usermodel = {
-        email: req.body.email,
-        password: req.body.password
-        
-    };
-
-    try{
-        console.log(req.cookie);
-        const user = await User.create(usermodel);
-        console.log('User Created');
-        res.status(200).json(user);
-    }
-    catch(e){
-        res.status(500).json(e);
-    }
-};
+const schema = require('../schemas/user');
+const Joi = require("joi");
 
 exports.getAll = async(req,res,next) =>{
     try {
         
-        const users = await User.findAll();
+        const users = await User.findAll({limit: 5});
         const data = res.status(200).json(users);
-        console.log(data);
     } catch (error) {
         console.log('An error occured');
-        res.status(200).json(error);
+        res.status(500).json("error");
     }
 };
 
 exports.insertOne = async(req,res,next) =>{
     try {
-        const users = await User.create({email: req.body['email'], password: req.body['password']});
-        const data = res.status(200).json(users);
+        value = schema.validate({ email: req.body['email'], password: req.body['password'] });
+        if(!Joi.isError(value["error"])){
+            const users = await User.create({email: req.body['email'], password: req.body['password']});
+            const data = res.status(200).json(users);
+        }else{
+            console.log("Invalid username/password");
+            res.status(401).send("Invalid username/ password");
+        }    
     } catch (error) {
         console.log('An error occured');
-        res.status(200).json(error);
+        res.status(500).json(error);
     }
 };
+
+exports.deleteOne = async(req,res,next) =>{
+    try {
+        console.log()
+        const deleted = await User.destroy({ where : {email: req.body["email"]}});
+        res.status(200).json({ message: `${req.body["email"]} deleted successfully`});
+    } catch (error) {
+        console.log("error");
+        res.status(500).json(error);
+    }
+}
 
 exports.logIn = async(req,res,next) =>{
     try {
@@ -49,11 +48,21 @@ exports.logIn = async(req,res,next) =>{
             const data = res.status(200).send("Logged in");
           } else {
             console.log("Incorrect Login");
-            res.status(200).json(error);
+            res.status(401).json("Login Unsuccessful");
           }
         
     } catch (error) {
         console.log('Log in error');
-        res.status(200).json(error);
+        res.status(500).json(error);
     }
 };
+exports.logOut = async(req,res,next) =>{
+    try {
+        res.clearCookie('loggedIn');
+        const data = res.status(200).send("Logged Out");   
+    } catch (error) {
+        console.log('Log out error');
+        res.status(500).json(error);
+    }
+};
+

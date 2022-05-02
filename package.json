@@ -12,8 +12,10 @@
   "dependencies": {
     "cookie-parser": "^1.4.6",
     "express": "^4.17.3",
+    "joi": "^17.6.0",
     "nodemon": "^2.0.15",
     "pg": "^8.6.0",
-    "sequelize": "^6.6.2"
+    "sequelize": "^6.6.2",
+    "upgrade": "^1.1.0"
   }
 }
